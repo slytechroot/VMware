@@ -1,0 +1,12 @@
+Function Disable-ESXSSH {
+#Stops and Disables SSH service on all hosts in a Vcenter 
+param ($vcenter,$cred)
+Write-Output "Connecting to $vcenter"
+Connect-VIServer -Server $vcenter -Credential $cred | out-null
+foreach ($vmhost in (get-vmhost | sort name)) {
+
+Get-VMHostService -VMHost $vmhost | ? {$_.Key -eq "TSM-SSH"} | tee -Variable s | Set-VMHostService -Policy off|Stop-VMHo
+stService  -Confirm:$false
+}
+Disconnect-VIServer $vcenter -Confirm:$false
+}
